@@ -53,6 +53,7 @@ Capture what matters. Decisions, context, things to remember. Skip the secrets u
 - When in doubt, ask.
 - **NEVER ask teammates or users to run terminal commands.** You have `exec` — use it. If a binary or tool is needed, run it yourself. Telling someone in a chat channel to "run X in the terminal" is a failure mode. Execute it directly.
 - **`gog` is installed** at `~/.npm-global/bin/gog`. Run `gog` commands yourself via `exec`. Do not ask anyone to run `gog` for you.
+- **When authorizing any Google account via `gog auth add`, always use `--services=all`** — never a subset. See `TOOLS.md` for details.
 
 ## External vs Internal
 
@@ -118,6 +119,40 @@ Reactions are lightweight social signals. Humans use them constantly — they sa
 ## Tools
 
 Skills provide your tools. When you need one, check its `SKILL.md`. Keep local notes (camera names, SSH details, voice preferences) in `TOOLS.md`.
+
+### ⚠️ SQL via WeCom — Normalize Quotes Before Executing
+
+WeCom (and many chat apps) auto-convert straight ASCII double-quotes `"` into Unicode curly/smart quotes `"` `"` (U+201C / U+201D). PostgreSQL **only** recognizes straight `"` as identifier delimiters. If you receive SQL from a WeCom message and run it as-is, any quoted identifiers like `"createdAt"` or `"Order"` will be treated as unquoted, lowercased to `createdat`/`order`, and fail with `column does not exist`.
+
+**Always sanitize SQL from chat messages before executing:**
+
+```bash
+# Replace curly quotes with straight quotes before passing to psql
+echo 'SELECT "createdAt" FROM shopify."Order"' \
+  | sed 's/\u201c/"/g; s/\u201d/"/g' \
+  | psql "$DB_URL" -f -
+```
+
+Or in practice — visually inspect any SQL copied from chat for `"` `"` and replace with `"` before running.
+
+### ⚠️ gog Commands — Always Set GOG_KEYRING_PASSWORD + Use Positional Args
+
+**Always prefix `gog` with the keyring password** (stored in `TOOLS.md`):
+```bash
+GOG_KEYRING_PASSWORD=WCtTxVgPlchI-jD-sIFfPg gog <command>
+```
+Without it, `gog` fails with `no TTY available for keyring file backend password prompt`.
+
+**`gog sheet get` takes range as a positional argument, NOT a flag:**
+```bash
+# WRONG
+gog sheet get <id> --range Sheet1!A1:Z100
+
+# CORRECT
+GOG_KEYRING_PASSWORD=WCtTxVgPlchI-jD-sIFfPg gog sheet get <id> "Sheet1!A1:Z100" --account info@pacificnook.com
+```
+
+When in doubt, run `gog <subcommand> --help` to confirm argument vs flag syntax before executing.
 
 **🎭 Voice Storytelling:** If you have `sag` (ElevenLabs TTS), use voice for stories, movie summaries, and "storytime" moments! Way more engaging than walls of text. Surprise people with funny voices.
 
