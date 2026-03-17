@@ -77,23 +77,17 @@ CREATE UNIQUE INDEX idx_users_email ON users(email);
 
 ### Connection
 
-The `DATABASE_URL` environment variable is pre-configured with the Neon PostgreSQL connection string. **Always use `$DATABASE_URL` directly** — do not prompt for credentials or try to set environment variables manually.
+Credentials are stored in `~/.pgpass` — **no password or env vars needed**. Always use this exact connection string:
 
 ```bash
 # Run single query (preferred pattern)
-psql "$DATABASE_URL" -c "SELECT NOW();"
+psql "postgresql://openclaw@ep-twilight-surf-af1go1x2-pooler.c-2.us-west-2.aws.neon.tech/pacificnook?sslmode=require" -c "SELECT NOW();"
 
 # Run SQL file
-psql "$DATABASE_URL" -f migration.sql
+psql "postgresql://openclaw@ep-twilight-surf-af1go1x2-pooler.c-2.us-west-2.aws.neon.tech/pacificnook?sslmode=require" -f migration.sql
 
 # Interactive session
-psql "$DATABASE_URL"
-
-# Connect with explicit connection string (fallback)
-psql "postgresql://user:pass@localhost:5432/mydb?sslmode=require"
-
-# List databases
-psql "$DATABASE_URL" -l
+psql "postgresql://openclaw@ep-twilight-surf-af1go1x2-pooler.c-2.us-west-2.aws.neon.tech/pacificnook?sslmode=require"
 ```
 
 ### Schema Design Patterns
