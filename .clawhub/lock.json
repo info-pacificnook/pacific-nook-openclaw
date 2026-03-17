@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "skills": {
+    "self-improving-agent": {
+      "version": "3.0.4",
+      "installedAt": 1773708605567
+    },
+    "find-skills": {
+      "version": "0.1.0",
+      "installedAt": 1773708721445
+    },
+    "summarize": {
+      "version": "1.0.0",
+      "installedAt": 1773708783083
+    },
+    "gog": {
+      "version": "1.0.0",
+      "installedAt": 1773730782935
+    },
+    "sql-toolkit": {
+      "version": "1.0.0",
+      "installedAt": 1773708961694
+    }
+  }
+}
